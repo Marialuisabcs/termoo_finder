@@ -44,12 +44,15 @@ def get_five_letter_words():
 
 def get_possible_words(wrong_letters: list):
     """
-    Get all the words that contains the characters specified in the 'letters' list
-    :param wrong_letters: list with the
-    :return:
+    Get all the words that not contains the characters specified in the 'wrong_letters' list. This method should be used
+    just one time to initialize a search, here we can retrieve the first possible words from the csv file to a list for
+    better handling.
+
+    :param wrong_letters: list with the letters that a proven no to be in the correct word
+    :return: list of the possible words
     """
     if len(wrong_letters) == 0:
-        print(f'{RED}[!]Words needs letters pal...')
+        print(f'{RED}[!]I need at least one letter to start helping you...')
         return
 
     possible_words = []
@@ -58,7 +61,6 @@ def get_possible_words(wrong_letters: list):
         words = csv.DictReader(data_five)
         for word in words:
             result = [letter not in word['name'] for letter in wrong_letters]
-            # print(result)
             if all(result):
                 possible_words.append(word)
 
@@ -68,22 +70,68 @@ def get_possible_words(wrong_letters: list):
 
 
 def possible_by_rigth_letters(words: list, correct_letters: list):
+    """
+    Get all the words that contains the characters specified in the 'correct_letters' list.
+
+    :param words: list with all the possible correct words
+    :param correct_letters: list with the letters that a proven to be in the correct word
+    :return: updated list with the possible correct words
+
+    """
     possible_words = []
     for word in words:
         result = [letter in word for letter in correct_letters]
-        # print(result)
         if all(result):
             possible_words.append(word)
     return possible_words
 
 
 def possible_by_wrong_letters(words: list, wrong_letters: list):
+    """
+    Get all the words that does not contain the characters specified in the 'correct_letters' list.
+
+    :param words: list with all the possible correct words
+    :param wrong_letters: list with the letters that a proven no to be in the correct word
+    :return: updated list with the possible correct words
+    """
     possible_words = []
     for word in words:
         result = [letter not in word for letter in wrong_letters]
-        # print(result)
         if all(result):
             possible_words.append(word)
+    return possible_words
+
+
+def wrong_place(words: list, wrong_letter_placement: list):
+    """
+    Remove all the words that have the same letter placement indicated on the wrong_letter_placement list of dicts.
+
+    :param words:  list with all the possible correct words
+    :param wrong_letter_placement: list of dicts that indicates the letter and the their proven wrong placement
+    :return: updated list with the possible correct words
+    """
+    possible_words = words
+    for word in words:
+        for letter in wrong_letter_placement:
+            if word.startswith(letter["letter"], letter["index"]):
+                possible_words.remove(word)
+                break
+    return possible_words
+
+
+def right_place(words: list, right_letter_placement: list):
+    """
+    Get all words that match the right placement idicated on the right_letter_placement lis of dicts.
+    :param words: list with all the possible correct words
+    :param right_letter_placement: list of dicts that indicates the letter and their proven right placement
+    :return: updated list with the possible correct words
+    """
+    possible_words = []
+    for word in words:
+        for letter in right_letter_placement:
+            if word.startswith(letter["letter"], letter["index"]):
+                possible_words.append(word)
+                break
     return possible_words
 
 
@@ -125,38 +173,19 @@ def get_only_words(words_dict_list: list):
     return only_words
 
 
-def wrong_place(possible_words: list, letter_wrong_placement: list):
-    new_possible_words = possible_words
-    for word in possible_words:
-        for letter in letter_wrong_placement:
-            if word.startswith(letter["letter"], letter["index"]):
-                new_possible_words.remove(word)
-                break
-    return new_possible_words
-
-
-def right_place(possible_words: list, letter_right_placement: list):
-    new_possible_words = []
-    for word in possible_words:
-        for letter in letter_right_placement:
-            if word.startswith(letter["letter"], letter["index"]):
-                new_possible_words.append(word)
-                break
-    return new_possible_words
-
-
 def main():
+    # TESTING FOR WORD #59-arena
     wrong_letters = ['u', 'd', 'i', 'o', 't', 's']
     right_letter = ['a', 'n', 'e']
 
-    letter_wrong_placement = [{'letter': 'n', 'index': 1}, {'letter': 'e', 'index': 3}]
-    letter_right_placement = [{'letter': 'a', 'index': 0}]
+    wrong_letter_placement = [{'letter': 'n', 'index': 1}, {'letter': 'e', 'index': 3}]
+    right_letter_placement = [{'letter': 'a', 'index': 0}]
 
     possible_words = get_possible_words(wrong_letters)
     possible_words = possible_by_rigth_letters(possible_words, right_letter)
 
-    possible_words = wrong_place(possible_words, letter_wrong_placement)
-    possible_words = right_place(possible_words, letter_right_placement)
+    possible_words = wrong_place(possible_words, wrong_letter_placement)
+    possible_words = right_place(possible_words, right_letter_placement)
 
     print(f'Possible TERMOOS: {len(possible_words)}')
     for word in possible_words:
