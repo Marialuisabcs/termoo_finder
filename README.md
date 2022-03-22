@@ -1,6 +1,10 @@
 # Termoo Finder
-Python application to find possible words for the game Termoo (pt-br Wordle). For educational purposes only. 
+Python application to find possible words for the game Termoo (pt-br Wordle). 
+For educational purposes only. 
 
-### [!!]Note:
-`data.csv` is a copied file from a existing project. You can find it's original repo [here](https://github.com/fserb/pt-br.git)
+### [!!] Note:
+The original dictionary used to retrieve words for the game can be founde [here](https://github.com/fserb/pt-br.git).
+Please use the `data.csv` file, you can find all the five letter words using the
+get_five_letter_words() method to save them in a new csv file.
+
 
